@@ -1,0 +1,420 @@
+% =====================================================================
+%  Primes in Legendre intervals over F_q[t]:
+%  an exact explicit-formula algorithm, verification for d <= 10,
+%  fluctuations, and an anomaly in characteristic 2
+%  DRAFT -- not for distribution
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[top=28mm,bottom=28mm,left=25mm,right=25mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=MidnightBlue,urlcolor=MidnightBlue]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Open problem}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Fq}{\mathbb{F}_q}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\Nirr}{N_{\mathrm{irr}}}
+\newcommand{\Var}{\operatorname{Var}}
+
+\input{tables/macros.tex}
+
+\title{\textbf{Primes in Legendre intervals over $\Fq[t]$:\\
+an exact explicit-formula algorithm, verification for $d\le\AllQd$,\\
+and an anomaly in characteristic 2}}
+\author{Ruqing Chen\\[3pt]
+\small GUT Geoservice Inc., Montr\'eal, Canada\\
+\small \texttt{ruqing@hotmail.com}}
+\date{Draft, October 2026 --- not for distribution}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For monic $f\in\Fq[t]$ of degree $d$, the Legendre interval $\cI_f=\{f^2+s:\deg s\le d\}$ is
+the analogue of $[n^2,(n+1)^2]$. The Hayes--Weil estimate shows that $\cI_f$ contains an
+irreducible polynomial whenever $q\ge d-1$; the range $q\le d-2$ is open. We give an algorithm
+that computes the prime count $\Psi(f)=\sum_{P\in\cI_f}\Lambda(P)$ for \emph{all} $q^{d-1}$
+intervals of a given $(q,d)$ at once. It evaluates every Hayes $L$-function by a fast
+transform over the Hayes group, whose structure we make explicit for every $\Fq$, and runs in
+$O(d^2q^{d-1}+d\,\sigma\,q^{d-1})$ operations, where $\sigma$ is the sum of the cyclic orders of
+the group. Carried out in exact modular arithmetic, it proves that every Legendre interval
+contains an irreducible polynomial for every prime power $q$ when $d\le\AllQd$, and for $q=2$
+with $d\le\MaxDtwo$, $q=3$ with $d\le\MaxDthree$, $q=4$ with $d\le\MaxDfour$ and $q=5$ with
+$d\le\MaxDfive$. For odd $q$ the fluctuations of $\Psi$ across intervals follow the
+Keating--Rudnick variance $(d-2)q^{d+1}$ and a Gaussian law already for $q=3$, and the
+form factor of the $L$-functions matches the circular unitary ensemble up to an explicit
+arithmetic diagonal term. In characteristic $2$ the Legendre intervals form the subgroup of
+squares, every element has the shape $h^2+tb^2$, and the variance of $\Psi$ over them differs
+from the full-group value, which does follow $d-2$, by factors between $0.33$ and \MaxExcess.
+We show that this discrepancy is carried entirely by correlations between $L$-functions twisted by
+quadratic characters, and state its explanation as an open problem.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+% =====================================================================
+\section{Introduction}
+% =====================================================================
+
+Legendre's conjecture asserts that there is a prime between consecutive squares. Its function
+field analogue concerns the \emph{Legendre interval}
+\[
+ \cI_f=\{f^2+s:\ s\in\Fq[t],\ \deg s\le d\},\qquad f\in\Fq[t]\text{ monic of degree }d,
+\]
+the set of monic polynomials of degree $2d$ whose coefficients of $t^{2d-1},\dots,t^{d+1}$
+agree with those of $f^2$. Write
+\[
+ \Psi(f)=\sum_{P\in\cI_f}\Lambda(P),\qquad \Nirr(f)=\#\{P\in\cI_f:\ P\text{ irreducible}\},
+\]
+so that $2d\,\Nirr(f)=\Psi(f)-E(f)$ with $E(f)$ the contribution of proper prime powers.
+
+\paragraph{What is known.} Hayes characters and Weil's theorem give
+$|\Psi(f)-q^{d+1}|\le(d-2)(q^d-q)$ in every characteristic \cite{Hayes1965,Hsu1996,Cohen2005,Gao2021};
+with a bound for $E(f)$ this shows $\Nirr(f)\ge1$ whenever $q\ge d-1$ \cite{ChenV7}. At $q=d-2$
+the main term and the error are of the same size, and for $q\le d-2$, which contains the
+genuine analogue ($q$ fixed, $d\to\infty$), no method is known. Earlier computations
+\cite{ChenV7} tested every element of every interval and reached $d\le8$ for all $q$.
+
+\paragraph{This paper.}
+\begin{enumerate}[label=(\arabic*),nosep]
+\item \emph{An exact all-intervals algorithm} (Sections~\ref{sec:group}--\ref{sec:algorithm}).
+      The values $\Psi(f)$ for all $q^{d-1}$ classes are obtained from the explicit formula,
+      computing every Hayes $L$-function by a transform over the Hayes group. We determine an
+      explicit basis of this group for every $\Fq$. Done modulo two primes and recombined, the
+      computation is exact.
+\item \emph{Verification} (Section~\ref{sec:verification}). Every Legendre interval contains an
+      irreducible polynomial for all $q$ when $d\le\AllQd$, and much further for small $q$.
+\item \emph{Fluctuations and zeros} (Sections~\ref{sec:fluct}--\ref{sec:zeros}). For odd $q$,
+      the variance across intervals agrees with Keating--Rudnick \cite{KR2014} at fixed $q$; the
+      form factor of the $L$-functions equals an exact arithmetic diagonal for $n\le d-1$ and the
+      circular unitary ensemble (CUE) value beyond.
+\item \emph{Characteristic 2} (Section~\ref{sec:char2}). The Legendre intervals are the squares
+      of the Hayes group; their prime counts fluctuate far more than predicted. We locate the
+      excess in quadratic twists and pose its explanation as an open problem.
+\end{enumerate}
+
+% =====================================================================
+\section{Setup}\label{sec:setup}
+% =====================================================================
+
+Let $\ell=d-1$. For monic $g$ of degree $k$ put $[g]=u^kg(1/u)\bmod u^{\ell+1}$, an element of
+\[
+ \cG=\cG_\ell=\{1+c_1u+\dots+c_\ell u^\ell\}\quad(\text{multiplication mod }u^{\ell+1}),\qquad|\cG|=q^\ell .
+\]
+The map $g\mapsto[g]$ is multiplicative and records the $\ell$ coefficients below the leading one.
+For $x\in\cG$ let $\Psi(x)=\sum_{\deg P=2d,\,[P]=x}\Lambda(P)$; then $\Psi(f)=\Psi([f^2])=\Psi([f]^2)$.
+
+\begin{lemma}\label{lem:legendre-classes}
+As $f$ runs over monic polynomials of degree $d$, $[f]$ runs over all of $\cG$. Hence the
+Legendre intervals are exactly the classes in $\cG^2=\{x^2:x\in\cG\}$. If $q$ is odd, $\cG^2=\cG$.
+\end{lemma}
+
+\begin{proof}
+$[f]$ is determined by, and determines, the coefficients $f_{d-1},\dots,f_1$. Squaring is a
+bijection on the finite $p$-group $\cG$ when $p$ is odd.
+\end{proof}
+
+For a character $\chi$ of $\cG$ and $n\ge1$ put $\psi_n(\chi)=\sum_{\deg g=n}\Lambda(g)\chi([g])$ and
+$c_k(\chi)=\sum_{\deg g=k}\chi([g])$. For $\chi\ne1$, $L(z,\chi)=\sum_kc_k(\chi)z^k$ is a polynomial of
+degree $\le\ell-1$ whose inverse roots have absolute value $q^{1/2}$ or $1$ \cite{Hayes1965,KR2014},
+and $z\,L'(z,\chi)/L(z,\chi)=\sum_n\psi_n(\chi)z^n$. Comparing coefficients gives Newton's recursion
+\begin{equation}\label{eq:newton}
+ \psi_n(\chi)=n\,c_n(\chi)-\sum_{k=1}^{n-1}\psi_k(\chi)\,c_{n-k}(\chi),\qquad c_n=0\ (n\ge\ell),
+\end{equation}
+which involves no division. By orthogonality, for every $x\in\cG$,
+\begin{equation}\label{eq:explicit}
+ \Psi(x)=q^{-\ell}\sum_{\chi}\overline{\chi(x)}\,\psi_{2d}(\chi),\qquad \psi_{2d}(1)=q^{2d}.
+\end{equation}
+
+% =====================================================================
+\section{The structure of the Hayes group}\label{sec:group}
+% =====================================================================
+
+Let $q=p^k$ and let $\omega_0,\dots,\omega_{k-1}$ be a basis of $\Fq$ over $\mathbb F_p$. For $j\ge1$
+with $p\nmid j$ let $s_j$ be the least integer with $jp^{s_j}>\ell$.
+
+\begin{proposition}\label{prop:basis}
+$\cG_\ell$ is the internal direct product of the cyclic groups generated by $1+\omega_iu^j$,
+$p\nmid j\le\ell$, $0\le i<k$, and $1+\omega_iu^j$ has order $p^{s_j}$. In particular
+$\cG_\ell\cong\prod_{p\nmid j\le\ell}(\mathbb Z/p^{s_j})^k$.
+\end{proposition}
+
+\begin{proof}
+In characteristic $p$, $(1+\omega u^j)^{p^s}=1+\omega^{p^s}u^{jp^s}$, which is $1$ modulo
+$u^{\ell+1}$ exactly when $jp^s>\ell$; this gives the orders. The orders multiply to
+$\prod_jq^{s_j}=q^{\#\{(j,s):\,jp^s\le\ell\}}=q^\ell$, because every $m\le\ell$ is uniquely $jp^s$
+with $p\nmid j$. It remains to show that the elements generate. Let $x=1+c_mu^m+O(u^{m+1})$ with
+$c_m\ne0$, write $m=jp^a$, and expand $c_m^{p^{-a}}=\sum_ie_i\omega_i$ with $e_i\in\mathbb F_p$. Then
+$\prod_i(1+\omega_iu^j)^{e_ip^a}=1+\sum_ie_i\omega_i^{p^a}u^m+O(u^{m+1})=1+c_mu^m+O(u^{m+1})$, so
+dividing $x$ by this product raises the order of vanishing of $x-1$. Induction on $m$ expresses
+$x$ as a product of the proposed generators.
+\end{proof}
+
+The proof is an algorithm: it computes the coordinates of $[g]$ (its \emph{discrete logarithm})
+in $O(\ell^2p)$ operations in $\Fq$. Characters of $\cG$ are then
+$\chi_b(x)=\prod_{(j,i)}\zeta_{p^{s_j}}^{-a_{j,i}(x)b_{j,i}}$, and sums over $\cG$ weighted by
+characters become multidimensional discrete Fourier transforms with axis lengths $p^{s_j}$.
+
+% =====================================================================
+\section{The algorithm}\label{sec:algorithm}
+% =====================================================================
+
+\begin{enumerate}[label=\arabic*.,nosep]
+\item For $k=0,\dots,\ell-1$ form the indicator of $\{[g]:\deg g=k\}$ in the coordinates of
+      Proposition~\ref{prop:basis} (for $k\le\ell$ distinct $g$ give distinct classes), and transform
+      it to obtain $c_k(\chi)$ for all $\chi$.
+\item For every $\chi$ run \eqref{eq:newton} up to $n=2d$.
+\item Set $\psi_{2d}(1)=q^{2d}$ and invert the transform to obtain $\Psi(x)$ for all $x$ by \eqref{eq:explicit}.
+\end{enumerate}
+Step~1 costs $\ell$ transforms, step~2 costs $O(d^2)$ per character, step~3 one transform. With
+naive transforms along each axis the total is $O(d^2q^\ell+d\,\sigma\,q^\ell)$ operations, where
+$\sigma=k\sum_{p\nmid j\le\ell}p^{s_j}$. Testing every polynomial costs about $q^{2d}$ instead.
+
+\paragraph{Exact arithmetic.}
+All quantities in \eqref{eq:newton}--\eqref{eq:explicit} lie in $\mathbb Z[\zeta][1/q]$, where $\zeta$ is a
+primitive $p^S$-th root of unity and $p^S=\max_jp^{s_j}$. For a prime $M\equiv1\pmod{p^S}$, $M\ne p$,
+choose $z\in\mathbb F_M$ of order $p^S$; the ring map $\zeta\mapsto z$ turns
+\eqref{eq:newton}--\eqref{eq:explicit} into identities in $\mathbb F_M$. Running the algorithm in $\mathbb F_M$
+therefore returns $\Psi(x)\bmod M$ exactly. Since $0\le\Psi(x)\le 2d\,q^{d+1}$, two primes
+$M_1,M_2<2^{31}$ with $M_1M_2>2dq^{d+1}$ determine $\Psi(x)$ by the Chinese remainder theorem.
+All products fit in 64-bit integers.
+
+\paragraph{Checks.} A floating-point version (fast Fourier transforms) is used for exploration.
+The exact and floating-point results agree on every class tested; both agree with brute-force counts
+for all $11{,}232$ orbit representatives computed in \cite{ChenV7}; and $\sum_x\Psi(x)=q^{2d}$ holds
+exactly in every run. For example $q=5$, $d=8$ took one hour by brute force in \cite{ChenV7} and
+$0.4$\,s here.
+
+% =====================================================================
+\section{Verification}\label{sec:verification}
+% =====================================================================
+
+An interval is \emph{certified} if $\Psi(f)>d\,q^a+2q^{\lfloor2d/3\rfloor}$, with $a=1$ for odd $q$
+and $a=\lceil(d+1)/2\rceil$ for even $q$; by \cite[Lemma~2.3]{ChenV7} this bound exceeds $E(f)$, so a
+certified interval contains an irreducible polynomial.
+
+\begin{theorem}[computer-assisted]\label{thm:verify}
+Every Legendre interval over $\Fq$ contains an irreducible polynomial in each of the following cases:
+$q=2$, $d\le\MaxDtwo$; $q=3$, $d\le\MaxDthree$; $q=4$, $d\le\MaxDfour$; $q=5$, $d\le\MaxDfive$;
+$q=7$, $d\le\MaxDseven$; $q=8$, $d\le\MaxDeight$; $q=9$, $d\le\MaxDnine$. Consequently the
+function field analogue of Legendre's conjecture holds for every prime power $q$ when $d\le\AllQd$.
+\end{theorem}
+
+\begin{proof}
+For each listed $(q,d)$ the exact algorithm computes $\Psi$ on every Legendre class; all classes are
+certified except \Uncertified, whose exact counts are positive \cite{ChenV7}. For the second
+statement let $d\le\AllQd$: if $q\ge d-1$ use \cite{ChenV7}; otherwise $q\le d-2\le\AllQd-2$ and $q$ is
+one of the listed prime powers.
+\end{proof}
+
+\begin{table}[ht]
+\centering\small
+\input{tables/verification.tex}
+\caption{Exact verification. ``Intervals'' is the number of Legendre classes; the ratio is
+$\min_f\Psi(f)/q^{d+1}$; times are wall-clock for the exact computation (two primes).
+Only the largest $d$ for each $q$ and the cases with $q\le d-2$ near the boundary are shown;
+all cases are in \texttt{data/exact\_scan.csv}.}
+\label{tab:verify}
+\end{table}
+
+The case $d=\AllQdNext$ would require $q=9$ with $9^{\AllQd}\approx3.5\times10^9$ classes, beyond the
+memory used here.
+
+% =====================================================================
+\section{Fluctuations across intervals}\label{sec:fluct}
+% =====================================================================
+
+For odd $q$ every class is a Legendre interval (Lemma~\ref{lem:legendre-classes}), so the
+distribution of $\Psi$ over Legendre intervals is the distribution over all $q^{d-1}$ classes.
+Keating and Rudnick \cite{KR2014} proved $\Var\Psi\sim(d-2)q^{d+1}$ as $q\to\infty$ (for $d\ge4$).
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/p2_variance.pdf}
+\caption{$\Var_f\Psi(f)/q^{d+1}$ (mean square deviation from $q^{d+1}$) over all Legendre intervals.
+Left: odd $q$, against the Keating--Rudnick limit $d-2$. Right: even $q$, where the prediction fails.}
+\label{fig:var}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/p2_minratio_hist.pdf}
+\caption{Left: $\min_f\Psi(f)/q^{d+1}$ against $d$. Right: the distribution of
+$Z=(\Psi-q^{d+1})/\sqrt{(d-2)q^{d+1}}$ over the $\HistIntervals$ intervals with $(q,d)=\HistCase$,
+against the standard normal density.}
+\label{fig:min}
+\end{figure}
+
+For odd $q$ the ratio $\Var\Psi/((d-2)q^{d+1})$ is \VarRatioOdd\ for the largest computed $d$ of each
+$q$ (Figure~\ref{fig:var}), and $Z$ is close to Gaussian (Figure~\ref{fig:min}). The minimum of $\Psi$
+approaches $q^{d+1}$ as $d$ grows, as the Gaussian heuristic of \cite{ChenV7} predicts.
+
+% =====================================================================
+\section{The zeros}\label{sec:zeros}
+% =====================================================================
+
+For each nontrivial $\chi$ the inverse roots of $L(z,\chi)$ were computed numerically. In all cases
+listed in Table~\ref{tab:zeros} every inverse root has absolute value $\sqrt q$ to within $10^{-4}$,
+and a proportion close to $1-1/q$ of the characters has exactly $\ell-1=d-2$ of them.
+
+Let $F(n)=(q^\ell-1)^{-1}\sum_{\chi\ne1}|\psi_n(\chi)|^2/q^n$. Writing the inverse roots as $\sqrt q\,e^{i\theta}$,
+$F(n)$ is the average of $|\sum e^{in\theta}|^2$; for $N\times N$ CUE matrices this average is $\min(n,N)$.
+
+\begin{proposition}\label{prop:diagonal}
+For $1\le n\le\ell$,
+\[
+ F(n)=\frac{q^\ell S_n-q^{2n}}{(q^\ell-1)\,q^n},\qquad S_n=\sum_{\deg g=n}\Lambda(g)^2=\sum_{e\mid n}e^2I_e(q),
+\]
+where $I_e(q)$ is the number of monic irreducible polynomials of degree $e$. In particular
+$F(n)=n-\sum_{e\mid n,\,e<n}O(q^{e-n})$, and $F(2)=2-1/q+O(q^{2-\ell})$.
+\end{proposition}
+
+\begin{proof}
+By Parseval, $\sum_\chi|\psi_n(\chi)|^2=q^\ell\sum_{x}\bigl(\sum_{\deg g=n,[g]=x}\Lambda(g)\bigr)^2$. For
+$n\le\ell$ each class contains at most one monic polynomial of degree $n$, so the inner sum has at most
+one term and the total is $q^\ell S_n$. Remove the trivial character, $|\psi_n(1)|^2=q^{2n}$.
+\end{proof}
+
+The computed $F(n)$ agree with Proposition~\ref{prop:diagonal} to $10^{-14}$. For $n>\ell$ there is no such
+formula; there $F(n)$ is the variance of prime counts in classes of degree-$n$ polynomials, and it stays
+within \FormFactorDev\ of the CUE value $\ell-1$ (Figure~\ref{fig:zeros}). The nearest-neighbour
+spacings of the eigenangles agree with CUE$(d-2)$ to within $0.05$ in density.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{figures/p2_zeros.pdf}
+\caption{Left: the form factor $F(n)/(\ell-1)$ against $n/\ell$ for several $(q,d)$, with the CUE value
+$\min(n,\ell-1)/(\ell-1)$ and the exact diagonal of Proposition~\ref{prop:diagonal} (crosses). Right:
+nearest-neighbour spacing densities against CUE.}
+\label{fig:zeros}
+\end{figure}
+
+\begin{table}[ht]
+\centering\small
+\input{tables/zeros.tex}
+\caption{Zeros of all Hayes $L$-functions for the listed $(q,d)$. ``Generic'' is the proportion of
+characters whose $L$-function has the maximal number $d-2$ of inverse roots.}
+\label{tab:zeros}
+\end{table}
+
+% =====================================================================
+\section{Characteristic 2}\label{sec:char2}
+% =====================================================================
+
+\subsection{Structure}
+Let $q$ be even. By Lemma~\ref{lem:legendre-classes} the Legendre intervals form the subgroup $\cG^2$ of
+index $2^{k\cdot\#\{j\le\ell\ \mathrm{odd}\}}$. Their elements have a special form.
+
+\begin{proposition}\label{prop:char2}
+Let $q$ be even and $f$ monic of degree $d$. Every $P\in\cI_f$ can be written uniquely as
+\[
+ P=h^2+t\,b^2,\qquad h=f+a,\ \deg a\le\lfloor d/2\rfloor,\ \deg b\le\lfloor(d-1)/2\rfloor .
+\]
+Then $P'=b^2$, and $P$ is squarefree if and only if $\gcd(h,b)=1$.
+\end{proposition}
+
+\begin{proof}
+Write $s=P-f^2$ as $a(t)^2+t\,b(t)^2$ by separating even and odd powers (every element of $\Fq$ is a
+square); then $f^2+s=(f+a)^2+tb^2$ because squaring is additive. Differentiating, $P'=b^2$. If $\pi^2\mid P$
+for an irreducible $\pi$, then $\pi\mid P'=b^2$, so $\pi\mid b$ and $\pi\mid h^2$, so $\pi\mid h$. Conversely if
+$\pi\mid h$ and $\pi\mid b$ then $\pi^2$ divides both $h^2$ and $tb^2$. If $b=0$ then $P=h^2$ is not squarefree,
+and $\gcd(h,0)=h$ is nonconstant.
+\end{proof}
+
+Thus a Legendre interval in characteristic $2$ is a union, over the $q^{\lfloor(d+1)/2\rfloor}$ values of $b$,
+of the values of the quadratic polynomial $X^2+tb^2$ on a short interval of $X$ around $f$. Counting its
+primes is closer to a Bateman--Horn problem for quadratic polynomials than to counting primes in an interval.
+
+\subsection{The anomaly}
+
+\begin{table}[ht]
+\centering\small
+\input{tables/char2.tex}
+\caption{Characteristic 2. The two variance columns are the mean of $(\Psi-q^{d+1})^2/q^{d+1}$ over all
+classes of $\cG$ and over the Legendre intervals $\cG^2$; ``mean'' is the mean of $\Psi/q^{d+1}$ over $\cG^2$;
+``ratio'' is the quotient of the two variances, and ``excess'' is $1+\sum_{\varepsilon\ne1}\rho(\varepsilon)$ from
+\eqref{eq:rho}. Source: \texttt{data/char2\_variance.csv}.}
+\label{tab:char2}
+\end{table}
+
+Table~\ref{tab:char2} compares the variance of $\Psi$ over all classes of $\cG$ with the variance over the
+Legendre intervals $\cG^2$. Over all classes the variance follows $d-2$ for even $q$ just as for odd $q$,
+and the form factor over all characters matches CUE for $q=2,4,8$ (Figure~\ref{fig:zeros}). Over $\cG^2$
+the variance differs from it by a factor that ranges from about $0.33$ to \MaxExcess, while the mean
+stays close to $q^{d+1}$. The anomaly is therefore a property of the subfamily $\cG^2$, not of the
+$L$-functions as a whole.
+
+By Parseval on $\cG^2$, $\Var_{\cG^2}\Psi$ is governed by the sums $\sum_{\varepsilon}\psi_{2d}(\chi\varepsilon)$ over
+characters $\varepsilon$ trivial on $\cG^2$, i.e.\ the characters of order $\le2$. If $\psi_{2d}(\chi)$ and
+$\psi_{2d}(\chi\varepsilon)$ were uncorrelated, the variance would equal the full-group value. Define
+\begin{equation}\label{eq:rho}
+ \rho(\varepsilon)=\frac{\operatorname{Re}\sum_{\chi\ne1}\psi_{2d}(\chi)\overline{\psi_{2d}(\chi\varepsilon)}}{\sum_{\chi\ne1}|\psi_{2d}(\chi)|^2}.
+\end{equation}
+The ratio of the two variances is $1+\sum_{\varepsilon\ne1}\rho(\varepsilon)$ up to the trivial-character terms, and
+in every case of Table~\ref{tab:char2} the two columns coincide to four decimals. The whole anomaly is
+thus carried by correlations between quadratic twists. The large correlations
+concentrate on quadratic characters supported on the coordinates $j>\ell/2$ (generators of order $2$),
+and are equal across the $k$ basis directions of $\Fq$; for example, for $(q,d)=(8,4)$ every such $\varepsilon$
+has $\rho(\varepsilon)=0.238$.
+
+Two natural explanations fail. On fixed-$b$ slices, $\mu(h^2+tb^2)$ is neither of the form
+$\pm(-1)^{L(a)}$ with $L$ affine over $\mathbb F_2$ in the coefficients of $a$, nor a function of
+$h\bmod b$ alone (tested for $d=8,10,12$, $q=2$).
+
+\begin{problem}\label{prob:char2}
+Explain the excess variance of $\Psi$ over Legendre intervals in characteristic $2$: determine
+$\lim\Var_{\cG^2}\Psi/q^{d+1}$, as $q\to\infty$ through powers of $2$ and as $d\to\infty$, and identify
+the mechanism behind the correlations $\rho(\varepsilon)$, presumably through the Berlekamp discriminant
+and the form $P=h^2+tb^2$ with $P'=b^2$ \cite{Carmon2015,SawinShusterman2022}.
+\end{problem}
+
+% =====================================================================
+\section{Discussion}
+% =====================================================================
+
+The explicit formula reduces the verification of the function field Legendre conjecture to a
+transform over the Hayes group, and exact modular arithmetic makes the result a proof. The method
+reaches every $q$ for $d\le\AllQd$; going further needs memory proportional to $q^{d-1}$, so the next step,
+$q=9$ with $d=11$, needs a distributed transform.
+
+The data support the conjecture of \cite{ChenV7} that no Legendre interval is ever empty. For odd $q$ the
+fluctuations behave as random matrix theory predicts already at $q=3$; in characteristic $2$ they do not,
+for a reason that Problem~\ref{prob:char2} asks to explain.
+
+\begin{thebibliography}{99}
+\bibitem{Carmon2015} D.~Carmon, The autocorrelation of the M\"obius function and Chowla's conjecture
+ for the rational function field in characteristic 2, \textit{Philos.\ Trans.\ Roy.\ Soc.\ A} \textbf{373} (2015). arXiv:1409.3694.
+\bibitem{ChenV7} R.~Chen, Legendre's conjecture in function fields: the classical range, full monodromy,
+ and the open range $q\le d-2$ (v7), Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23185896}
+\bibitem{Cohen2005} S.\,D.~Cohen, Explicit theorems on generator polynomials,
+ \textit{Finite Fields Appl.}\ \textbf{11} (2005), 337--357.
+\bibitem{Gao2021} Z.~Gao, Improved error bounds for the number of irreducible polynomials and
+ self-reciprocal irreducible monic polynomials with prescribed coefficients over a finite field, arXiv:2109.14154.
+\bibitem{Hayes1965} D.\,R.~Hayes, The distribution of irreducibles in $GF[q,x]$,
+ \textit{Trans.\ Amer.\ Math.\ Soc.}\ \textbf{117} (1965), 101--127.
+\bibitem{Hsu1996} C.\,N.~Hsu, The distribution of irreducible polynomials in $\mathbb F_q[t]$,
+ \textit{J.\ Number Theory} \textbf{61} (1996), 85--96.
+\bibitem{KR2014} J.\,P.~Keating, Z.~Rudnick, The variance of the number of prime polynomials in short
+ intervals and in residue classes, \textit{Int.\ Math.\ Res.\ Not.}\ 2014, 259--288.
+\bibitem{SawinShusterman2022} W.~Sawin, M.~Shusterman, On the Chowla and twin primes conjectures over
+ $\mathbb F_q[T]$, \textit{Ann.\ of Math.}\ \textbf{196} (2022). arXiv:1808.04001.
+\end{thebibliography}
+\end{document}

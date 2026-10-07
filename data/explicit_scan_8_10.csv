@@ -1,0 +1,2 @@
+q,d,p,classes,legendre_intervals,min_Psi_ratio,max_Psi_ratio,mean_Psi_ratio,var_Psi_over_q^(d+1),KR_limit,min_Z,max_Z,E_bound,certified_all,uncertified,open_range,max_round_dev,seconds
+8,10,2,134217728,4096,0.9998709056526423,1.0007374845445156,1.0000040549784899,36.54618791572284,8,-4.23016357421875,24.1658935546875,3145728,1,0,1,0.0,340.97

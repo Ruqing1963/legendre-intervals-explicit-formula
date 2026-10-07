@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+# LaTeX build products (the compiled PDF is committed)
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
+# run logs
+results/log_*.txt
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc

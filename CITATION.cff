@@ -1,0 +1,24 @@
+﻿cff-version: 1.2.0
+message: "Draft, unpublished. Please do not cite yet."
+title: "Primes in Legendre intervals over F_q[t]: an exact explicit-formula algorithm, verification for d <= 10, and an anomaly in characteristic 2"
+version: "draft"
+authors:
+  - family-names: Chen
+    given-names: Ruqing
+    affiliation: "GUT Geoservice Inc., Montréal, Canada"
+license: CC-BY-4.0
+repository-code: "https://github.com/Ruqing1963/legendre-intervals-explicit-formula"
+references:
+  - type: article
+    title: "Legendre's Conjecture in Function Fields: the Classical Range, Full Monodromy, and the Open Range q <= d-2 (v7)"
+    authors:
+      - family-names: Chen
+        given-names: Ruqing
+    doi: 10.5281/zenodo.23185896
+keywords:
+  - Legendre conjecture
+  - function fields
+  - Hayes characters
+  - explicit formula
+  - computer-assisted proof
+  - random matrix theory
