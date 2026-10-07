@@ -1,4 +1,4 @@
-# Direction 2: characteristic-2 anomaly (research notes, not public)
+﻿# Direction 2: characteristic-2 anomaly (research notes, not public)
 
 ## Established (in the draft, Section 8)
 
@@ -7,7 +7,7 @@
 - Over all classes the variance of Psi follows d - 2 (KR) for even q too; the form factor over all characters matches CUE.
 - Over G^2 the variance differs from the full-group value by factors 0.33 to 21 (q = 2, 4, 8; d <= 16, 9, 7).
 - Var_{G^2} / Var_G = 1 + sum_{eps quadratic, eps != 1} rho(eps), matching to 4 decimals (code/char2_corr.py, data/char2_variance.csv).
-- Large rho(eps) concentrate on quadratic characters supported on the axes j > l/2 (generators of order 2), equal across the F_2-basis directions of F_q.
+- CORRECTED: the correlation mass does NOT concentrate on quadratic characters supported on the axes j > l/2 (generators of order 2). Summing rho over those characters gives only a minor part of the excess in most cases (e.g. 1.67 of 20.33 for (q,d) = (8,4)); see data/char2_excess.csv, columns rho_order2_axes and rho_other. An earlier note claimed concentration, based on the largest few rho values only.
 
 ## Refuted hypotheses (q = 2, d = 8, 10, 12; code/char2_probe.py)
 

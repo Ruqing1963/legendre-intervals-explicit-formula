@@ -36,9 +36,12 @@ def main():
         A.flat[0] = 0.0  # drop the trivial character
         tot = float(np.sum(np.abs(A) ** 2))
         axes_info = [(ax, n) for ax, n in enumerate(shape)]
+        l = d - 1
+        axis_j = [j for j in range(1, l + 1) if j % 2 == 1 for _ in range(ctx["k"])]
         # quadratic characters: subsets of axes, shift by n/2 on each chosen axis
         n_eps = 0
         rho_sum = 0.0
+        rho_high = 0.0  # characters supported only on generators of order 2 (j > l/2)
         for choice in itertools.product([0, 1], repeat=len(shape)):
             n_eps += 1
             if not any(choice):
@@ -47,12 +50,15 @@ def main():
             B = np.roll(A, shift=shift, axis=tuple(range(len(shape))))
             rho = float(np.real(np.sum(A * np.conj(B))) / tot)
             rho_sum += rho
+            if all(c == 0 or 2 * j > l for j, c in zip(axis_j, choice)):
+                rho_high += rho
             if abs(rho) > 0.05:
                 corr_rows.append({"q": q, "d": d, "eps_axes": "".join(map(str, choice)),
                                   "axis_orders": ";".join(map(str, shape)), "rho": round(rho, 4)})
         # Under independence the variance over H equals the full-group variance; the excess factor
         # is 1 + sum_{eps != 1} rho(eps).
-        ex_rows.append({"q": q, "d": d, "quadratic_chars": n_eps, "excess_factor": round(1 + rho_sum, 4)})
+        ex_rows.append({"q": q, "d": d, "quadratic_chars": n_eps, "excess_factor": round(1 + rho_sum, 4),
+                        "rho_order2_axes": round(rho_high, 4), "rho_other": round(rho_sum - rho_high, 4)})
         strong = [(r["eps_axes"], r["rho"]) for r in corr_rows if r["q"] == q and r["d"] == d]
         print(q, d, "shape", shape, "excess", round(1 + rho_sum, 3), "strong:", strong[:6], flush=True)
     with open(os.path.join(DATA, "char2_excess.csv"), "w", newline="") as fh:

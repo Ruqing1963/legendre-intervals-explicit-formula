@@ -145,18 +145,20 @@ def main():
         vG = float(np.mean((Psi - main_) ** 2) / main_)
         vH = float(np.mean((Psi[mask] - main_) ** 2) / main_)
         rows.append({"q": q, "d": d, "mean_H": float(np.mean(Psi[mask]) / main_), "var_G": vG, "var_H": vH,
-                     "ratio": vH / vG, "excess": float(r.excess_factor), "KR": d - 2})
+                     "ratio": vH / vG, "excess": float(r.excess_factor), "rho2": float(r.rho_order2_axes),
+                     "rhoo": float(r.rho_other), "KR": d - 2})
     cv = pd.DataFrame(rows)
     cv.to_csv(os.path.join(DATA, "char2_variance.csv"), index=False)
-    lines = [r"\begin{tabular}{rrrrrrrr}", r"\toprule",
-             r"$q$ & $d$ & mean & Var (all classes) & Var (Legendre) & ratio & excess & $d-2$ \\", r"\midrule"]
+    lines = [r"\begin{tabular}{rrrrrrrrr}", r"\toprule",
+             r"$q$ & $d$ & mean & Var (all) & Var (Legendre) & ratio & excess & $\Sigma\rho$, order 2 & $\Sigma\rho$, other \\",
+             r"\midrule"]
     last_q = None
     for _, r in cv.iterrows():
         if last_q is not None and r.q != last_q:
             lines.append(r"\addlinespace")
         last_q = r.q
         lines.append(f"{int(r.q)} & {int(r.d)} & {r.mean_H:.4f} & {r.var_G:.2f} & {r.var_H:.2f} & {r.ratio:.2f} & "
-                     f"{r.excess:.2f} & {int(r.KR)} \\\\")
+                     f"{r.excess:.2f} & {r.rho2:+.2f} & {r.rhoo:+.2f} \\\\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     open(os.path.join(TAB, "char2.tex"), "w").write("\n".join(lines))
     # ---- figure: variance

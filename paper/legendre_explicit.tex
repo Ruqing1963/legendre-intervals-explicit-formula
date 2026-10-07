@@ -53,8 +53,8 @@ irreducible polynomial whenever $q\ge d-1$; the range $q\le d-2$ is open. We giv
 that computes the prime count $\Psi(f)=\sum_{P\in\cI_f}\Lambda(P)$ for \emph{all} $q^{d-1}$
 intervals of a given $(q,d)$ at once. It evaluates every Hayes $L$-function by a fast
 transform over the Hayes group, whose structure we make explicit for every $\Fq$, and runs in
-$O(d^2q^{d-1}+d\,\sigma\,q^{d-1})$ operations, where $\sigma$ is the sum of the cyclic orders of
-the group. Carried out in exact modular arithmetic, it proves that every Legendre interval
+$O(d^2q^{d-1}+d\,\sigma\,q^{d-1})$ operations, where $\sigma$ is the sum of the orders of the cyclic
+factors in our decomposition of the group. Carried out in exact modular arithmetic, it proves that every Legendre interval
 contains an irreducible polynomial for every prime power $q$ when $d\le\AllQd$, and for $q=2$
 with $d\le\MaxDtwo$, $q=3$ with $d\le\MaxDthree$, $q=4$ with $d\le\MaxDfour$ and $q=5$ with
 $d\le\MaxDfive$. For odd $q$ the fluctuations of $\Psi$ across intervals follow the
@@ -123,13 +123,17 @@ The map $g\mapsto[g]$ is multiplicative and records the $\ell$ coefficients belo
 For $x\in\cG$ let $\Psi(x)=\sum_{\deg P=2d,\,[P]=x}\Lambda(P)$; then $\Psi(f)=\Psi([f^2])=\Psi([f]^2)$.
 
 \begin{lemma}\label{lem:legendre-classes}
-As $f$ runs over monic polynomials of degree $d$, $[f]$ runs over all of $\cG$. Hence the
-Legendre intervals are exactly the classes in $\cG^2=\{x^2:x\in\cG\}$. If $q$ is odd, $\cG^2=\cG$.
+The interval $\cI_f$ depends only on $f_{d-1},\dots,f_1$; in particular $\cI_{f+c}=\cI_f$ for $c\in\Fq$.
+The map $f\mapsto[f]$ from monic polynomials of degree $d$ to $\cG$ is surjective and $q$-to-one, and
+$\cI_f$ is the class $[f]^2$. Hence the Legendre intervals are exactly the classes in
+$\cG^2=\{x^2:x\in\cG\}$, distinct intervals being distinct classes. If $q$ is odd, $\cG^2=\cG$.
 \end{lemma}
 
 \begin{proof}
-$[f]$ is determined by, and determines, the coefficients $f_{d-1},\dots,f_1$. Squaring is a
-bijection on the finite $p$-group $\cG$ when $p$ is odd.
+For $c\in\Fq$, $(f+c)^2-f^2=2cf+c^2$ has degree $\le d$, so $\cI_{f+c}=\cI_f$. The class $[f]$ records
+exactly $f_{d-1},\dots,f_1$, which can be chosen freely; this gives surjectivity and the fibres of size $q$
+(the choice of $f_0$). Since $[\cdot]$ is multiplicative, $[f^2]=[f]^2$, and $\cI_f$ is by definition the set of
+monic $P$ of degree $2d$ with $[P]=[f^2]$. Squaring is a bijection on the finite $p$-group $\cG$ when $p$ is odd.
 \end{proof}
 
 For a character $\chi$ of $\cG$ and $n\ge1$ put $\psi_n(\chi)=\sum_{\deg g=n}\Lambda(g)\chi([g])$ and
@@ -186,7 +190,8 @@ characters become multidimensional discrete Fourier transforms with axis lengths
 \end{enumerate}
 Step~1 costs $\ell$ transforms, step~2 costs $O(d^2)$ per character, step~3 one transform. With
 naive transforms along each axis the total is $O(d^2q^\ell+d\,\sigma\,q^\ell)$ operations, where
-$\sigma=k\sum_{p\nmid j\le\ell}p^{s_j}$. Testing every polynomial costs about $q^{2d}$ instead.
+$\sigma=k\sum_{p\nmid j\le\ell}p^{s_j}$ is the sum of the orders of the $k\cdot\#\{j\le\ell:p\nmid j\}$ cyclic
+factors in Proposition~\ref{prop:basis}. Testing every polynomial costs about $q^{2d}$ instead.
 
 \paragraph{Exact arithmetic.}
 All quantities in \eqref{eq:newton}--\eqref{eq:explicit} lie in $\mathbb Z[\zeta][1/q]$, where $\zeta$ is a
@@ -211,6 +216,15 @@ An interval is \emph{certified} if $\Psi(f)>d\,q^a+2q^{\lfloor2d/3\rfloor}$, wit
 and $a=\lceil(d+1)/2\rceil$ for even $q$; by \cite[Lemma~2.3]{ChenV7} this bound exceeds $E(f)$, so a
 certified interval contains an irreducible polynomial.
 
+\begin{remark}[The exponent $a$]
+The dominant part of $E(f)$ comes from squares $\pi^2\in\cI_f$ with $\deg\pi=d$, each contributing $d$.
+If $q$ is odd, the coefficient of $t^{2d-j}$ in $\pi^2$ is $2\pi_{d-j}$ plus a polynomial in
+$\pi_{d-1},\dots,\pi_{d-j+1}$, so the $d-1$ prescribed coefficients determine $\pi_{d-1},\dots,\pi_1$ and at
+most $q$ polynomials $\pi$ qualify. If $q$ is even, $\pi^2=\sum_i\pi_i^2t^{2i}$ has no odd-degree terms, so
+only the prescribed coefficients in even positions carry information. They determine just
+$\lfloor(d-1)/2\rfloor$ coefficients of $\pi$, which leaves up to $q^{\lceil(d+1)/2\rceil}$ candidates.
+\end{remark}
+
 \begin{theorem}[computer-assisted]\label{thm:verify}
 Every Legendre interval over $\Fq$ contains an irreducible polynomial in each of the following cases:
 $q=2$, $d\le\MaxDtwo$; $q=3$, $d\le\MaxDthree$; $q=4$, $d\le\MaxDfour$; $q=5$, $d\le\MaxDfive$;
@@ -219,11 +233,21 @@ function field analogue of Legendre's conjecture holds for every prime power $q$
 \end{theorem}
 
 \begin{proof}
-For each listed $(q,d)$ the exact algorithm computes $\Psi$ on every Legendre class; all classes are
-certified except \Uncertified, whose exact counts are positive \cite{ChenV7}. For the second
-statement let $d\le\AllQd$: if $q\ge d-1$ use \cite{ChenV7}; otherwise $q\le d-2\le\AllQd-2$ and $q$ is
-one of the listed prime powers.
+For each listed $(q,d)$ the exact algorithm computes $\Psi$ on every Legendre class, and all classes are
+certified except some classes in \Uncertified. For these four cases Table~\ref{tab:lowdeg} lists every
+Legendre interval with $\Psi(f)$, $E(f)$ and $\Nirr(f)$, obtained by testing every element and enumerating
+the prime powers; in each of them $\Nirr(f)\ge1$. For the second statement let $d\le\AllQd$: if $q\ge d-1$
+use \cite{ChenV7}; otherwise $q\le d-2\le\AllQd-2$ and $q$ is one of the listed prime powers.
 \end{proof}
+
+\begin{table}[ht]
+\centering\small
+\input{tables/lowdeg.tex}
+\caption{All Legendre intervals for the four cases in which some interval is not certified by the bound
+(last column). Each row is one interval, given by a representative $f$ (with $f_0=0$). Source:
+\texttt{data/low\_degree\_char2.csv}, produced by \texttt{code/low\_degree\_cases.py}.}
+\label{tab:lowdeg}
+\end{table}
 
 \begin{table}[ht]
 \centering\small
@@ -288,9 +312,11 @@ $F(n)=n-\sum_{e\mid n,\,e<n}O(q^{e-n})$, and $F(2)=2-1/q+O(q^{2-\ell})$.
 \end{proposition}
 
 \begin{proof}
-By Parseval, $\sum_\chi|\psi_n(\chi)|^2=q^\ell\sum_{x}\bigl(\sum_{\deg g=n,[g]=x}\Lambda(g)\bigr)^2$. For
-$n\le\ell$ each class contains at most one monic polynomial of degree $n$, so the inner sum has at most
-one term and the total is $q^\ell S_n$. Remove the trivial character, $|\psi_n(1)|^2=q^{2n}$.
+By Parseval, $\sum_\chi|\psi_n(\chi)|^2=q^\ell\sum_{x}\bigl(\sum_{\deg g=n,[g]=x}\Lambda(g)\bigr)^2$. For monic
+$g=t^n+g_{n-1}t^{n-1}+\dots+g_0$ we have $[g]=1+g_{n-1}u+\dots+g_0u^n$ modulo $u^{\ell+1}$. If $n\le\ell$ no
+coefficient is lost in the truncation, so $g\mapsto[g]$ is injective on monic polynomials of degree $n$: exactly
+$q^n$ classes contain one such polynomial and the other $q^\ell-q^n$ contain none. The inner sum therefore has
+at most one term and the total is $q^\ell S_n$. Remove the trivial character, $|\psi_n(1)|^2=q^{2n}$.
 \end{proof}
 
 The computed $F(n)$ agree with Proposition~\ref{prop:diagonal} to $10^{-14}$. For $n>\ell$ there is no such
@@ -370,14 +396,31 @@ $\psi_{2d}(\chi\varepsilon)$ were uncorrelated, the variance would equal the ful
 \end{equation}
 The ratio of the two variances is $1+\sum_{\varepsilon\ne1}\rho(\varepsilon)$ up to the trivial-character terms, and
 in every case of Table~\ref{tab:char2} the two columns coincide to four decimals. The whole anomaly is
-thus carried by correlations between quadratic twists. The large correlations
-concentrate on quadratic characters supported on the coordinates $j>\ell/2$ (generators of order $2$),
-and are equal across the $k$ basis directions of $\Fq$; for example, for $(q,d)=(8,4)$ every such $\varepsilon$
-has $\rho(\varepsilon)=0.238$.
+thus carried by correlations between quadratic twists.
+
+\paragraph{Where the correlations sit.}
+Let $q$ be even. By Proposition~\ref{prop:basis}, $\cG\cong\prod_{j\le\ell\text{ odd}}(\mathbb Z/2^{s_j})^k$, and
+$\cG^2$ is the subgroup of elements whose coordinates are all even. Hence $\cG/\cG^2\cong(\mathbb Z/2)^{k\,m}$
+with $m=\#\{j\le\ell\text{ odd}\}$, and the characters trivial on $\cG^2$ are
+$\varepsilon(x)=(-1)^{\sum_{(j,i)}e_{j,i}a_{j,i}(x)}$ with $e_{j,i}\in\{0,1\}$. The coordinates with $j>\ell/2$
+are exactly those with $s_j=1$, that is, the generators $1+\omega_iu^j$ of order $2$; there are
+$k\cdot\#\{j\text{ odd}:\ \ell/2<j\le\ell\}$ of them. One might expect the twists supported on these
+coordinates to carry the effect, but they do not: Table~\ref{tab:char2} splits $\sum_{\varepsilon\ne1}\rho(\varepsilon)$ into
+the part from $\varepsilon$ with $e_{j,i}=0$ for all $j<\ell/2$ and the rest, and in most cases the rest dominates
+(for example $1.67$ against $18.67$ for $(q,d)=(8,4)$). The correlations are spread over many quadratic twists,
+and we have no structural description of which twists correlate.
 
 Two natural explanations fail. On fixed-$b$ slices, $\mu(h^2+tb^2)$ is neither of the form
 $\pm(-1)^{L(a)}$ with $L$ affine over $\mathbb F_2$ in the coefficients of $a$, nor a function of
 $h\bmod b$ alone (tested for $d=8,10,12$, $q=2$).
+
+The natural framework is the parity of the number of prime factors. In odd characteristic it is given by
+Pellet's formula through the discriminant; in characteristic $2$ Pellet's formula fails, and Carmon
+\cite{Carmon2015} replaced the discriminant by Berlekamp's discriminant to prove the function field Chowla
+conjecture in characteristic $2$ in the limit $q\to\infty$. For $P=h^2+tb^2$ the derivative $P'=b^2$ depends
+only on $b$, which is the situation in which Sawin and Shusterman \cite{SawinShusterman2022} turn the
+M\"obius function into a Dirichlet character in odd characteristic. Whether an analogue of their mechanism,
+through Berlekamp's discriminant, accounts for the correlations is open.
 
 \begin{problem}\label{prob:char2}
 Explain the excess variance of $\Psi$ over Legendre intervals in characteristic $2$: determine
@@ -393,11 +436,20 @@ and the form $P=h^2+tb^2$ with $P'=b^2$ \cite{Carmon2015,SawinShusterman2022}.
 The explicit formula reduces the verification of the function field Legendre conjecture to a
 transform over the Hayes group, and exact modular arithmetic makes the result a proof. The method
 reaches every $q$ for $d\le\AllQd$; going further needs memory proportional to $q^{d-1}$, so the next step,
-$q=9$ with $d=11$, needs a distributed transform.
+$q=9$ with $d=11$, needs either a distributed transform or a reduction by symmetry. The substitutions
+$t\mapsto\lambda t+b$ and the Frobenius automorphism of $\Fq$ act on classes of degree $2d$ by affine maps of
+$\cG$ (an automorphism followed by a translation) and preserve $\Psi$; for $q=9$ this group has order
+$2\cdot9\cdot8=144$. A transform adapted to this action could reduce the memory by a factor of that order,
+but we have not implemented it, and whether it brings $(9,11)$ within reach of one machine is untested.
 
 The data support the conjecture of \cite{ChenV7} that no Legendre interval is ever empty. For odd $q$ the
 fluctuations behave as random matrix theory predicts already at $q=3$; in characteristic $2$ they do not,
 for a reason that Problem~\ref{prob:char2} asks to explain.
+
+\paragraph{Code and data.} All programs and results, including \texttt{data/exact\_scan.csv},
+\texttt{data/char2\_variance.csv} and \texttt{data/low\_degree\_char2.csv}, are in the repository
+\url{https://github.com/Ruqing1963/legendre-intervals-explicit-formula}, which will be made public and
+archived with a DOI on submission.
 
 \begin{thebibliography}{99}
 \bibitem{Carmon2015} D.~Carmon, The autocorrelation of the M\"obius function and Chowla's conjecture
