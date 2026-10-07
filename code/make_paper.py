@@ -125,13 +125,22 @@ def main():
     open(os.path.join(TAB, "verification.tex"), "w").write("\n".join(lines))
     # ---- zeros table
     zs = pd.read_csv(os.path.join(DATA, "zero_stats_summary.csv"))
-    lines = [r"\begin{tabular}{rrrrr}", r"\toprule",
-             r"$q$ & $d$ & characters & generic & roots off $|\omega|=\sqrt q$ \\", r"\midrule"]
+    lines = [r"\begin{tabular}{rrrrrrr}", r"\toprule",
+             r"$q$ & $d$ & characters & generic & exact & conductor counts & max dev.\ of $|\omega|/\sqrt q$ \\",
+             r"\midrule"]
+    max_root_dev = 0.0
     for _, r in zs.sort_values(["q", "d"]).iterrows():
-        lines.append(f"{int(r.q)} & {int(r.d)} & {int(r.characters):,} & {r.generic_fraction:.4f} & "
-                     f"{int(r.roots_off_both_circles)} \\\\".replace(",", "{,}"))
+        l = int(r.d) - 1
+        exact = (int(r.q) ** l - int(r.q) ** (l - 1)) / (int(r.q) ** l - 1)
+        cc_ok = "as predicted" if r.conductor_counts == r.conductor_counts_expected else "MISMATCH"
+        max_root_dev = max(max_root_dev, float(r.max_rel_dev_from_sqrt_q))
+        lines.append(f"{int(r.q)} & {int(r.d)} & {int(r.characters):,} & {r.generic_fraction:.4f} & {exact:.4f} & "
+                     f"{cc_ok} & {float(r.max_rel_dev_from_sqrt_q):.1e} \\\\".replace(",", "{,}"))
     lines += [r"\bottomrule", r"\end{tabular}"]
     open(os.path.join(TAB, "zeros.tex"), "w").write("\n".join(lines))
+    with open(os.path.join(TAB, "macros.tex"), "a") as fh:
+        fh.write(f"\\newcommand{{\\MaxRootDev}}{{${max_root_dev:.1e}$}}\n".replace("e-0", "\\times10^{-").replace("$}}", "}$}}") if False else
+                 f"\\newcommand{{\\MaxRootDev}}{{$%s\\times10^{{%d}}$}}\n" % (f"{max_root_dev / 10 ** math.floor(math.log10(max_root_dev)):.1f}", math.floor(math.log10(max_root_dev))))
     # ---- char 2: full-group vs square-subgroup variance
     rows = []
     for _, r in c2.iterrows():

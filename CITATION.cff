@@ -1,7 +1,9 @@
 ﻿cff-version: 1.2.0
-message: "Draft, unpublished. Please do not cite yet."
+message: "If you use this work, please cite it as below."
 title: "Primes in Legendre intervals over F_q[t]: an exact explicit-formula algorithm, verification for d <= 10, and an anomaly in characteristic 2"
-version: "draft"
+version: "1.0"
+date-released: 2026-10-07
+doi: 10.5281/zenodo.23219609
 authors:
   - family-names: Chen
     given-names: Ruqing

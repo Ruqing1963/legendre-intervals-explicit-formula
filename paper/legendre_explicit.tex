@@ -41,7 +41,8 @@ and an anomaly in characteristic 2}}
 \author{Ruqing Chen\\[3pt]
 \small GUT Geoservice Inc., Montr\'eal, Canada\\
 \small \texttt{ruqing@hotmail.com}}
-\date{Draft, October 2026 --- not for distribution}
+\date{October 2026\\[2pt]\small DOI: \href{https://doi.org/10.5281/zenodo.23219609}{10.5281/zenodo.23219609}\quad
+Code and data: \url{https://github.com/Ruqing1963/legendre-intervals-explicit-formula}}
 
 \begin{document}
 \maketitle
@@ -139,7 +140,7 @@ monic $P$ of degree $2d$ with $[P]=[f^2]$. Squaring is a bijection on the finite
 
 For a character $\chi$ of $\cG$ and $n\ge1$ put $\psi_n(\chi)=\sum_{\deg g=n}\Lambda(g)\chi([g])$ and
 $c_k(\chi)=\sum_{\deg g=k}\chi([g])$. For $\chi\ne1$, $L(z,\chi)=\sum_kc_k(\chi)z^k$ is a polynomial of
-degree $\le\ell-1$ whose inverse roots have absolute value $q^{1/2}$ or $1$ \cite{Hayes1965,KR2014},
+degree $\le\ell-1$ whose inverse roots have absolute value $q^{1/2}$ (Proposition~\ref{prop:conductor}; \cite{Hayes1965,KR2014}),
 and $z\,L'(z,\chi)/L(z,\chi)=\sum_n\psi_n(\chi)z^n$. Comparing coefficients gives Newton's recursion
 \begin{equation}\label{eq:newton}
  \psi_n(\chi)=n\,c_n(\chi)-\sum_{k=1}^{n-1}\psi_k(\chi)\,c_{n-k}(\chi),\qquad c_n=0\ (n\ge\ell),
@@ -260,8 +261,8 @@ all cases are in \texttt{data/exact\_scan.csv}.}
 \label{tab:verify}
 \end{table}
 
-The case $d=\AllQdNext$ would require $q=9$ with $9^{\AllQd}\approx3.5\times10^9$ classes, beyond the
-memory used here.
+The case $d=\AllQdNext$ would require $q=7$, $8$ and $9$ with $d=\AllQdNext$, that is up to
+$9^{\AllQd}\approx3.5\times10^9$ classes, beyond the memory used here.
 
 % =====================================================================
 \section{Fluctuations across intervals}\label{sec:fluct}
@@ -296,9 +297,37 @@ approaches $q^{d+1}$ as $d$ grows, as the Gaussian heuristic of \cite{ChenV7} pr
 \section{The zeros}\label{sec:zeros}
 % =====================================================================
 
-For each nontrivial $\chi$ the inverse roots of $L(z,\chi)$ were computed numerically. In all cases
-listed in Table~\ref{tab:zeros} every inverse root has absolute value $\sqrt q$ to within $10^{-4}$,
-and a proportion close to $1-1/q$ of the characters has exactly $\ell-1=d-2$ of them.
+\begin{proposition}\label{prop:conductor}
+For $\chi\ne1$ let $m(\chi)$ be the least $m$ such that $\chi$ is trivial on $\{x\in\cG:x\equiv1\bmod u^m\}$,
+so $2\le m(\chi)\le\ell+1$. Then $L(z,\chi)$ has degree exactly $m(\chi)-2$, and all its inverse roots have
+absolute value $q^{1/2}$. Exactly $q^{m-1}-q^{m-2}$ characters have $m(\chi)=m$.
+\end{proposition}
+
+\begin{proof}
+Write $\hat g(u)=u^{\deg g}g(1/u)$. For monic $g$ of degree $k$, $\hat g$ runs over the polynomials $h$ with
+$h(0)=1$ and $\deg h\le k$, bijectively, and $[g]=h\bmod u^{\ell+1}$. Hence
+\[
+ L(z,\chi)=\sum_{h(0)=1}\chi(h)\,z^{\deg h}\sum_{k\ge\deg h}z^k=\frac{L_{\mathrm{D}}(z,\chi)}{1-z},\qquad
+ L_{\mathrm D}(z,\chi)=\sum_{h(0)=1}\chi(h)\,z^{\deg h},
+\]
+where $L_{\mathrm D}(z,\chi)$ is the Dirichlet $L$-function of $\chi$ viewed as an
+even character modulo $u^{\ell+1}$ in $\Fq[u]$ (scaling by the constant term identifies polynomials with $h(0)=1$
+with monic polynomials prime to $u$, and $\chi$ is trivial on constants). The character is induced from a
+primitive even character modulo $u^{m(\chi)}$, and since $u$ is the only prime dividing either modulus,
+$L_{\mathrm D}$ is unchanged by passing to the primitive character. For a primitive even character modulo a
+polynomial of degree $m\ge2$, $L_{\mathrm D}(z)=(1-z)P(z)$ with $P$ of degree $m-2$ whose inverse roots all
+have absolute value $q^{1/2}$ (Weil; see \cite[Ch.~4]{Rosen2002} and \cite[\S4]{KR2014}). So
+$L(z,\chi)=P(z)$. The characters with $m(\chi)\le m$ are those of the quotient $\cG_{m-1}$, which has $q^{m-1}$
+elements.
+\end{proof}
+
+The computed $L$-functions confirm this exactly: in every case of Table~\ref{tab:zeros} the number of
+characters of each conductor $u^m$ is $q^{m-1}-q^{m-2}$, the coefficient $c_{m-2}(\chi)$ is nonzero and all
+higher ones vanish. The inverse roots were then computed numerically from the exact-degree polynomials. Their
+absolute values are $\sqrt q$ to within $10^{-6}$ relative error, except for roots of multiplicity greater
+than one, where floating-point root finding is less accurate; the largest deviation is \MaxRootDev. The only
+such case with a deviation above $10^{-5}$ is one quadratic character for $(q,d)=(4,10)$, whose $L$-function is
+$(1+2z)^4(1-2z+4z^2)^2$.
 
 Let $F(n)=(q^\ell-1)^{-1}\sum_{\chi\ne1}|\psi_n(\chi)|^2/q^n$. Writing the inverse roots as $\sqrt q\,e^{i\theta}$,
 $F(n)$ is the average of $|\sum e^{in\theta}|^2$; for $N\times N$ CUE matrices this average is $\min(n,N)$.
@@ -309,7 +338,7 @@ For $1\le n\le\ell$,
  F(n)=\frac{q^\ell S_n-q^{2n}}{(q^\ell-1)\,q^n},\qquad S_n=\sum_{\deg g=n}\Lambda(g)^2=\sum_{e\mid n}e^2I_e(q),
 \]
 where $I_e(q)$ is the number of monic irreducible polynomials of degree $e$. In particular
-$F(n)=n-\sum_{e\mid n,\,e<n}O(q^{e-n})$, and $F(2)=2-1/q+O(q^{2-\ell})$.
+$F(n)=n+O(n^2q^{-n/2})+O(q^{n-\ell})$, and $F(2)=2-1/q+O(q^{2-\ell})$.
 \end{proposition}
 
 \begin{proof}
@@ -337,8 +366,10 @@ nearest-neighbour spacing densities against CUE.}
 \begin{table}[ht]
 \centering\small
 \input{tables/zeros.tex}
-\caption{Zeros of all Hayes $L$-functions for the listed $(q,d)$. ``Generic'' is the proportion of
-characters whose $L$-function has the maximal number $d-2$ of inverse roots.}
+\caption{Zeros of the Hayes $L$-functions for the listed $(q,d)$ (all characters, or a random sample of
+$400{,}000$). ``Generic'' is the proportion of characters with conductor $u^{\ell+1}$, i.e.\ with the maximal
+degree $d-2$; the exact proportion is $(q^\ell-q^{\ell-1})/(q^\ell-1)$. The last column is the largest relative
+deviation of $|\omega|$ from $\sqrt q$ over all computed inverse roots.}
 \label{tab:zeros}
 \end{table}
 
@@ -437,7 +468,7 @@ and the form $P=h^2+tb^2$ with $P'=b^2$ \cite{Carmon2015,SawinShusterman2022}.
 The explicit formula reduces the verification of the function field Legendre conjecture to a
 transform over the Hayes group, and exact modular arithmetic makes the result a proof. The method
 reaches every $q$ for $d\le\AllQd$; going further needs memory proportional to $q^{d-1}$, so the next step,
-$q=9$ with $d=11$, needs either a distributed transform or a reduction by symmetry. The substitutions
+$q=7,8,9$ with $d=11$, needs either a distributed transform or a reduction by symmetry. The substitutions
 $t\mapsto\lambda t+b$ and the Frobenius automorphism of $\Fq$ act on classes of degree $2d$ by affine maps of
 $\cG$ (an automorphism followed by a translation) and preserve $\Psi$; for $q=9$ this group has order
 $2\cdot9\cdot8=144$. A transform adapted to this action could reduce the memory by a factor of that order,
@@ -447,10 +478,10 @@ The data support the conjecture of \cite{ChenV7} that no Legendre interval is ev
 fluctuations behave as random matrix theory predicts already at $q=3$; in characteristic $2$ they do not,
 for a reason that Problem~\ref{prob:char2} asks to explain.
 
-\paragraph{Code and data.} All programs and results, including \texttt{data/exact\_scan.csv},
-\texttt{data/char2\_variance.csv} and \texttt{data/low\_degree\_char2.csv}, are in the repository
-\url{https://github.com/Ruqing1963/legendre-intervals-explicit-formula}, which will be made public and
-archived with a DOI on submission.
+\paragraph{Code and data.} All programs and results, including the files \texttt{exact\_scan.csv},
+\texttt{char2\_variance.csv} and \texttt{low\_degree\_char2.csv} in the \texttt{data} directory, are in the repository
+\begin{center}\small\url{https://github.com/Ruqing1963/legendre-intervals-explicit-formula}\end{center}
+This paper is archived as \href{https://doi.org/10.5281/zenodo.23219609}{doi:10.5281/zenodo.23219609}.
 
 \begin{thebibliography}{99}
 \bibitem{Carmon2015} D.~Carmon, The autocorrelation of the M\"obius function and Chowla's conjecture
@@ -467,6 +498,8 @@ archived with a DOI on submission.
  \textit{J.\ Number Theory} \textbf{61} (1996), 85--96.
 \bibitem{KR2014} J.\,P.~Keating, Z.~Rudnick, The variance of the number of prime polynomials in short
  intervals and in residue classes, \textit{Int.\ Math.\ Res.\ Not.}\ 2014, 259--288.
+\bibitem{Rosen2002} M.~Rosen, \textit{Number Theory in Function Fields}, Graduate Texts in Mathematics 210,
+ Springer, 2002.
 \bibitem{SawinShusterman2022} W.~Sawin, M.~Shusterman, On the Chowla and twin primes conjectures over
  $\mathbb F_q[T]$, \textit{Ann.\ of Math.}\ \textbf{196} (2022). arXiv:1808.04001.
 \end{thebibliography}
