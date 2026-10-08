@@ -2,9 +2,9 @@
 
 **An exact explicit-formula algorithm, verification for d ≤ 10, and an anomaly in characteristic 2.**
 
-Published on Zenodo: [10.5281/zenodo.23219609](https://doi.org/10.5281/zenodo.23219609).
+Published on Zenodo: [10.5281/zenodo.23225896](https://doi.org/10.5281/zenodo.23225896).
 
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23219609-blue)](https://doi.org/10.5281/zenodo.23219609)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23225896-blue)](https://doi.org/10.5281/zenodo.23225896)
 
 For monic $f\in\mathbb F_q[t]$ of degree $d$, the Legendre interval $\mathcal I_f=\lbrace f^2+s:\deg s\le d\rbrace$ is the function-field analogue of $[n^2,(n+1)^2]$. The Hayes–Weil estimate settles the range $q\ge d-1$; see the companion preprint v7, [10.5281/zenodo.23185896](https://doi.org/10.5281/zenodo.23185896), with code at [legendre-function-field](https://github.com/Ruqing1963/legendre-function-field). This repository treats the open range $q\le d-2$.
 
