@@ -2,7 +2,8 @@
 %  Primes in Legendre intervals over F_q[t]:
 %  an exact explicit-formula algorithm, verification for d <= 10,
 %  fluctuations, and an anomaly in characteristic 2
-%  DRAFT -- not for distribution
+%  Ruqing Chen. Zenodo DOI 10.5281/zenodo.23225896.
+%  Compile: pdflatex legendre_explicit.tex (twice); needs tables/ and figures/.
 % =====================================================================
 \documentclass[11pt,a4paper]{article}
 
@@ -87,12 +88,17 @@ agree with those of $f^2$. Write
 \]
 so that $2d\,\Nirr(f)=\Psi(f)-E(f)$ with $E(f)$ the contribution of proper prime powers.
 
-\paragraph{What is known.} Hayes characters and Weil's theorem give
-$|\Psi(f)-q^{d+1}|\le(d-2)(q^d-q)$ in every characteristic \cite{Hayes1965,Hsu1996,Cohen2005,Gao2021};
-with a bound for $E(f)$ this shows $\Nirr(f)\ge1$ whenever $q\ge d-1$ \cite{ChenV7}. At $q=d-2$
+\paragraph{What is known.} Irreducible polynomials with prescribed leading coefficients have
+been studied since Hayes \cite{Hayes1965,Hsu1996,Wan1997,Cohen2005,Pollack2013,Ha2016,Gao2021}.
+Hayes characters and Weil's theorem give $|\Psi(f)-q^{d+1}|\le(d-2)q^d$ in every characteristic
+(Proposition~\ref{prop:classical} below); with a bound for $E(f)$ (Lemma~\ref{lem:E}) this shows
+$\Nirr(f)\ge1$ whenever $q\ge d-1$ \cite{ChenV7}. At $q=d-2$
 the main term and the error are of the same size, and for $q\le d-2$, which contains the
-genuine analogue ($q$ fixed, $d\to\infty$), no method is known. Earlier computations
-\cite{ChenV7} tested every element of every interval and reached $d\le8$ for all $q$.
+genuine analogue ($q$ fixed, $d\to\infty$), no method is known: the large-$q$ methods for
+primes in short intervals and arithmetic progressions, Chebotarev's theorem with a big monodromy
+group \cite{BBR2015} and the equidistribution of Frobenius for the characters of the Hayes group
+\cite{KR2014,Katz2013} (see Rudnick's survey \cite{Rudnick2014}), do not apply when $q$ is fixed.
+Earlier computations \cite{ChenV7} tested every element of every interval and reached $d\le8$ for all $q$.
 
 \paragraph{This paper.}
 \begin{enumerate}[label=(\arabic*),nosep]
@@ -138,10 +144,13 @@ exactly $f_{d-1},\dots,f_1$, which can be chosen freely; this gives surjectivity
 monic $P$ of degree $2d$ with $[P]=[f^2]$. Squaring is a bijection on the finite $p$-group $\cG$ when $p$ is odd.
 \end{proof}
 
+\begin{sloppypar}
 For a character $\chi$ of $\cG$ and $n\ge1$ put $\psi_n(\chi)=\sum_{\deg g=n}\Lambda(g)\chi([g])$ and
 $c_k(\chi)=\sum_{\deg g=k}\chi([g])$. For $\chi\ne1$, $L(z,\chi)=\sum_kc_k(\chi)z^k$ is a polynomial of
-degree $\le\ell-1$ whose inverse roots have absolute value $q^{1/2}$ (Proposition~\ref{prop:conductor}; \cite{Hayes1965,KR2014}),
-and $z\,L'(z,\chi)/L(z,\chi)=\sum_n\psi_n(\chi)z^n$. Comparing coefficients gives Newton's recursion
+degree $\le\ell-1$ whose inverse roots have absolute value $q^{1/2}$ (Proposition~\ref{prop:conductor}
+and \cite{Hayes1965,KR2014}), and $z\,L'(z,\chi)/L(z,\chi)=\sum_n\psi_n(\chi)z^n$. Comparing
+coefficients gives Newton's recursion
+\end{sloppypar}
 \begin{equation}\label{eq:newton}
  \psi_n(\chi)=n\,c_n(\chi)-\sum_{k=1}^{n-1}\psi_k(\chi)\,c_{n-k}(\chi),\qquad c_n=0\ (n\ge\ell),
 \end{equation}
@@ -214,18 +223,55 @@ $0.4$\,s here.
 \section{Verification}\label{sec:verification}
 % =====================================================================
 
-An interval is \emph{certified} if $\Psi(f)>d\,q^a+2q^{\lfloor2d/3\rfloor}$, with $a=1$ for odd $q$
-and $a=\lceil(d+1)/2\rceil$ for even $q$; by \cite[Lemma~2.3]{ChenV7} this bound exceeds $E(f)$, so a
-certified interval contains an irreducible polynomial.
+Recall that $E(f)=\sum_{P\in\cI_f,\ P\text{ not irreducible}}\Lambda(P)$ is the contribution of the
+proper prime powers, so that $2d\,\Nirr(f)=\Psi(f)-E(f)$. Put $a=1$ if $q$ is odd and
+$a=\lceil(d+1)/2\rceil$ if $q$ is even.
 
-\begin{remark}[The exponent $a$]
-The dominant part of $E(f)$ comes from squares $\pi^2\in\cI_f$ with $\deg\pi=d$, each contributing $d$.
-If $q$ is odd, the coefficient of $t^{2d-j}$ in $\pi^2$ is $2\pi_{d-j}$ plus a polynomial in
-$\pi_{d-1},\dots,\pi_{d-j+1}$, so the $d-1$ prescribed coefficients determine $\pi_{d-1},\dots,\pi_1$ and at
-most $q$ polynomials $\pi$ qualify. If $q$ is even, $\pi^2=\sum_i\pi_i^2t^{2i}$ has no odd-degree terms, so
-only the prescribed coefficients in even positions carry information. They determine just
-$\lfloor(d-1)/2\rfloor$ coefficients of $\pi$, which leaves up to $q^{\lceil(d+1)/2\rceil}$ candidates.
-\end{remark}
+\begin{lemma}\label{lem:E}
+For every monic $f$ of degree $d$, $E(f)\le d\,q^a+2q^{\lfloor2d/3\rfloor}$.
+\end{lemma}
+
+\begin{proof}
+A proper prime power in $\cI_f$ is $P=\pi^j$ with $\pi$ monic irreducible, $j\ge2$, $j\mid2d$, and
+$\Lambda(P)=\deg\pi=2d/j$.
+
+\emph{Squares} ($j=2$). Here $\deg\pi=d$ and $\pi^2-f^2=s$ has degree $\le d$. If $q$ is odd,
+$\pi^2-f^2=(\pi-f)(\pi+f)$ with $\deg(\pi+f)=d$, so $\pi-f$ is a constant: at most $q$ such $\pi$.
+If $q$ is even, $\pi^2-f^2=(\pi-f)^2$, so $\deg(\pi-f)\le d/2$: at most
+$q^{\lfloor d/2\rfloor+1}=q^{\lceil(d+1)/2\rceil}$ such $\pi$. Each contributes $d$, giving at most $d\,q^a$.
+(The exponent $a$ is the reason the bound is weaker in characteristic $2$: $\pi^2$ has no odd-degree
+terms, so the prescribed coefficients in odd positions carry no information about $\pi$.)
+
+\emph{Higher powers} ($j\ge3$). Then $m=\deg\pi\le2d/3$. Summing over \emph{all} monic irreducibles
+of degree $m\le\lfloor2d/3\rfloor$, whether or not $\pi^j\in\cI_f$, and using
+$m\,I_m(q)=\sum_{e\mid m}\mu(m/e)q^e\le q^m$ for the number $I_m(q)$ of monic irreducibles of degree
+$m$ ($\mu$ the M\"obius function), the contribution is at most
+$\sum_{m\le\lfloor2d/3\rfloor}q^m<q^{\lfloor2d/3\rfloor+1}/(q-1)\le2q^{\lfloor2d/3\rfloor}$.
+\end{proof}
+
+An interval is \emph{certified} if $\Psi(f)>d\,q^a+2q^{\lfloor2d/3\rfloor}$. By Lemma~\ref{lem:E},
+$2d\,\Nirr(f)=\Psi(f)-E(f)>0$ for a certified interval, so it contains an irreducible polynomial.
+The bound of Lemma~\ref{lem:E} also recovers the classical range from the Weil bound alone.
+
+\begin{proposition}[the range $q\ge d-1$]\label{prop:classical}
+For every monic $f$ of degree $d\ge2$, $|\Psi(f)-q^{d+1}|\le(d-2)q^d$. If $q\ge d-1$ and $q\ge4$,
+every Legendre interval is certified; in particular it contains an irreducible polynomial.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:conductor} (proved in Section~\ref{sec:zeros}, independently of this
+section), $|\psi_{2d}(\chi)|\le(m(\chi)-2)q^d$ for $\chi\ne1$, and
+$\sum_{\chi\ne1}(m(\chi)-2)=\sum_{m=3}^{\ell+1}(m-2)(q^{m-1}-q^{m-2})=(\ell-1)q^\ell$ by telescoping.
+Inserting this in \eqref{eq:explicit} gives the first claim. Hence $\Psi(f)\ge q^d(q-d+2)$, which is
+$\ge q^d$ when $q\ge d-1$, and it remains to compare with $R=d\,q^a+2q^{\lfloor2d/3\rfloor}$.
+For $d=2$ the Weil term is absent, $\Psi(f)=q^3$, and $R\le2q^2+2q<q^3$ for $q\ge3$.
+For $d\ge3$ and odd $q\ge5$: $\lfloor2d/3\rfloor\le d-1$ and $d\le q+1$, so
+$q^d-R\ge q^{d-1}(q-2)-(q+1)q\ge3q^2-q^2-q>0$.
+For $d\ge5$ and even $q\ge4$: $a\le d-2$ and $\lfloor2d/3\rfloor\le d-2$, so
+$R\le(d+2)q^{d-2}\le(q+3)q^{d-2}<q^d$.
+For $d\in\{3,4\}$ and even $q\ge4$ we use the full lower bound $\Psi(f)\ge q^{d+1}-(d-2)q^d$:
+$q^4-q^3>5q^2=R$ for $d=3$, and $q^5-2q^4>4q^3+2q^2=R$ for $d=4$, both for $q\ge4$.
+\end{proof}
 
 \begin{theorem}[computer-assisted]\label{thm:verify}
 Every Legendre interval over $\Fq$ contains an irreducible polynomial in each of the following cases:
@@ -238,8 +284,9 @@ function field analogue of Legendre's conjecture holds for every prime power $q$
 For each listed $(q,d)$ the exact algorithm computes $\Psi$ on every Legendre class, and all classes are
 certified except some classes in \Uncertified. For these four cases Table~\ref{tab:lowdeg} lists every
 Legendre interval with $\Psi(f)$, $E(f)$ and $\Nirr(f)$, obtained by testing every element and enumerating
-the prime powers; in each of them $\Nirr(f)\ge1$. For the second statement let $d\le\AllQd$: if $q\ge d-1$
-use \cite{ChenV7}; otherwise $q\le d-2\le\AllQd-2$ and $q$ is one of the listed prime powers.
+the prime powers; in each of them $\Nirr(f)\ge1$. For the second statement let $d\le\AllQd$. If
+$q\ge\max(d-1,4)$, Proposition~\ref{prop:classical} applies. Otherwise $q\le3$ or $q\le d-2\le\AllQd-2$,
+so $q\in\{2,3,4,5,7,8\}$, and for each of these $d\le\AllQd$ lies within the verified range.
 \end{proof}
 
 \begin{table}[ht]
@@ -414,7 +461,9 @@ classes of $\cG$ and over the Legendre intervals $\cG^2$; ``mean'' is the mean o
 \end{table}
 
 Table~\ref{tab:char2} compares the variance of $\Psi$ over all classes of $\cG$ with the variance over the
-Legendre intervals $\cG^2$. Over all classes the variance follows $d-2$ for even $q$ just as for odd $q$,
+Legendre intervals $\cG^2$. Over all classes the variance follows $d-2$ for even $q$ just as for odd $q$
+(cf.\ \cite{Katz2013}, where the Frobenius equidistribution for the characters of $\cG$ is obtained
+through Witt vectors in arbitrary characteristic),
 and the form factor over all characters matches CUE for $q=2,4,8$ (Figure~\ref{fig:zeros}). Over $\cG^2$
 the variance differs from it by a factor that ranges from about $0.33$ to \MaxExcess, while the mean
 stays close to $q^{d+1}$. The anomaly is therefore a property of the subfamily $\cG^2$, not of the
@@ -461,14 +510,18 @@ the mechanism behind the correlations $\rho(\varepsilon)$, presumably through th
 and the form $P=h^2+tb^2$ with $P'=b^2$ \cite{Carmon2015,SawinShusterman2022}.
 \end{problem}
 
-\paragraph{Note added in proof.}
+\paragraph{Note added.}
 In the sequel \cite{Chen2026b}, Problem~\ref{prob:char2} is resolved for $d=4$:
 $\Var_{\cG^2}\Psi/q^5=q(q-1)$ and $\Var_{\cG}\Psi/q^5=3-3/q$ are proved for all $q=2^k$
 via the quadratic tower $\Fq\subset\mathbb F_{q^2}\subset\mathbb F_{q^4}\subset\mathbb F_{q^8}$,
 and the correlations $\rho(\varepsilon)$ are determined ($\rho=1$ on the $q-1$ twists of conductor $u^2$,
-$\rho=(q-3)/(3(q-1))$ on all others for odd $k$). For $d=6$ the Legendre profile is shown to take exactly
-three values, and exact computations up to $q=32$ ($q=128$ for two of the three governing constants)
-establish $\Var_{\cG^2}\Psi/q^7\asymp q^2$, excluding the $q^4$ law one might have expected.
+$\rho=(q-3)/(3(q-1))$ on all others for odd $k$). For $d=6$ the Legendre profile takes exactly
+three values, governed by three constants $A_6,X,Y$; $A_6$ is evaluated for all odd $k$, and the variance
+satisfies $\Var_{\cG^2}\Psi/q^7\asymp q^2$, excluding the $q^4$ law one might have expected. The constant
+$X$ is treated in Parts~III and IV \cite{Chen2026c,Chen2026d}, where the relevant character sums of order
+$4$ are governed by the symplectic group $Sp_4(\mathbb F_2)\cong S_6$ acting on a hexad of roots of an
+explicit sextic. The mechanism found there is the additive structure of the subgroup $\cG^2$ and the
+quadratic towers $\mathbb F_{q^{2d}}/\mathbb F_{q^d}$, rather than the Berlekamp discriminant suggested above.
 
 % =====================================================================
 \section{Discussion}
@@ -494,26 +547,45 @@ The files named in the text (\texttt{exact\_scan.csv}, \texttt{char2\_variance.c
 \href{https://doi.org/10.5281/zenodo.23225896}{doi:10.5281/zenodo.23225896}.
 
 \begin{thebibliography}{99}
+\bibitem{BBR2015} E.~Bank, L.~Bary-Soroker, L.~Rosenzweig, Prime polynomials in short intervals and in
+ arithmetic progressions, \textit{Duke Math.\ J.}\ \textbf{164} (2015), 277--295.
 \bibitem{Carmon2015} D.~Carmon, The autocorrelation of the M\"obius function and Chowla's conjecture
  for the rational function field in characteristic 2, \textit{Philos.\ Trans.\ Roy.\ Soc.\ A} \textbf{373} (2015). arXiv:1409.3694.
 \bibitem{Chen2026b} R.~Chen, Prime polynomials in Legendre intervals over $\mathbb F_{2^k}[t]$, II:
  exact variances via quadratic towers and supersingular Artin--Schreier curves, preprint (2026),
- DOI 10.5281/zenodo.23224897.
+ DOI 10.5281/zenodo.23252762.
+\bibitem{Chen2026c} R.~Chen, Prime polynomials in Legendre intervals over $\mathbb F_{2^k}[t]$, III:
+ the hexad of a quartic linearised polynomial, the symplectic group $Sp_4(\mathbb F_2)$, and the Witt sums
+ behind the constant $X$, preprint (2026), DOI 10.5281/zenodo.23290724.
+\bibitem{Chen2026d} R.~Chen, Prime polynomials in Legendre intervals over $\mathbb F_{2^k}[t]$, IV:
+ point counts on hexad modular curves, Brown invariants of Witt sheaves, and the constant $X$,
+ preprint (2026), DOI 10.5281/zenodo.23308682.
 \bibitem{ChenV7} R.~Chen, Legendre's conjecture in function fields: the classical range, full monodromy,
  and the open range $q\le d-2$ (v7), Zenodo, 2026. \url{https://doi.org/10.5281/zenodo.23185896}
 \bibitem{Cohen2005} S.\,D.~Cohen, Explicit theorems on generator polynomials,
  \textit{Finite Fields Appl.}\ \textbf{11} (2005), 337--357.
 \bibitem{Gao2021} Z.~Gao, Improved error bounds for the number of irreducible polynomials and
  self-reciprocal irreducible monic polynomials with prescribed coefficients over a finite field, arXiv:2109.14154.
+\bibitem{Ha2016} J.~Ha, Irreducible polynomials with several prescribed coefficients,
+ \textit{Finite Fields Appl.}\ \textbf{40} (2016), 95--121.
 \bibitem{Hayes1965} D.\,R.~Hayes, The distribution of irreducibles in $GF[q,x]$,
  \textit{Trans.\ Amer.\ Math.\ Soc.}\ \textbf{117} (1965), 101--127.
 \bibitem{Hsu1996} C.\,N.~Hsu, The distribution of irreducible polynomials in $\mathbb F_q[t]$,
  \textit{J.\ Number Theory} \textbf{61} (1996), 85--96.
+\bibitem{Katz2013} N.\,M.~Katz, Witt vectors and a question of Keating and Rudnick,
+ \textit{Int.\ Math.\ Res.\ Not.\ IMRN} 2013, no.~16, 3613--3638.
 \bibitem{KR2014} J.\,P.~Keating, Z.~Rudnick, The variance of the number of prime polynomials in short
- intervals and in residue classes, \textit{Int.\ Math.\ Res.\ Not.}\ 2014, 259--288.
+ intervals and in residue classes, \textit{Int.\ Math.\ Res.\ Not.\ IMRN} 2014, no.~1, 259--288.
+\bibitem{Pollack2013} P.~Pollack, Irreducible polynomials with several prescribed coefficients,
+ \textit{Finite Fields Appl.}\ \textbf{22} (2013), 70--78.
 \bibitem{Rosen2002} M.~Rosen, \textit{Number Theory in Function Fields}, Graduate Texts in Mathematics 210,
  Springer, 2002.
+\bibitem{Rudnick2014} Z.~Rudnick, Some problems in analytic number theory for polynomials over a finite
+ field, in: \textit{Proceedings of the International Congress of Mathematicians (Seoul, 2014)}, Vol.~II,
+ Kyung Moon Sa, Seoul, 2014, 443--459.
 \bibitem{SawinShusterman2022} W.~Sawin, M.~Shusterman, On the Chowla and twin primes conjectures over
  $\mathbb F_q[T]$, \textit{Ann.\ of Math.}\ \textbf{196} (2022). arXiv:1808.04001.
+\bibitem{Wan1997} D.~Wan, Generators and irreducible polynomials over finite fields,
+ \textit{Math.\ Comp.}\ \textbf{66} (1997), 1195--1212.
 \end{thebibliography}
 \end{document}
